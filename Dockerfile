@@ -2,10 +2,10 @@ FROM ubuntu:14.04.2
 
 MAINTAINER minimum@cepave.com
 
-ENV WORKDIR=/home/fe PACKDIR=/package PACKFILE=falcon-fe.tar.gz CONFIGDIR=/config CONFIGFILE=cfg.json
+ENV WORKDIR=/home/fe PACKFILE=falcon-fe.tar.gz CONFIGDIR=/config CONFIGFILE=cfg.json
 
 # Volume
-VOLUME $CONFIGDIR $WORKDIR $PACKDIR
+VOLUME $CONFIGDIR
 
 # Package
 RUN \
@@ -13,14 +13,15 @@ RUN \
   apt-get install -y ca-certificates
 
 # Install Open-Falcon Fe Component
+ADD $PACKFILE $WORKDIR
 COPY $CONFIGFILE $CONFIGDIR/
-COPY $PACKFILE $PACKDIR/
+RUN ln -s $CONFIGDIR/$CONFIGFILE $WORKDIR/
 
 WORKDIR /root
 COPY run.sh ./
 
 # Port
-EXPOSE 1234
+EXPOSE 1234 1235
 
 # Start
 CMD ["./run.sh"]
